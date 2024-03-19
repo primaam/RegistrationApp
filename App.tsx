@@ -12,6 +12,7 @@ import AppStack from './src/navigation/AppStack';
 
 function App(): React.JSX.Element {
   const [data, setData] = React.useState({});
+
   return (
     <FormContext.Provider
       value={{
