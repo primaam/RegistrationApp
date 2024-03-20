@@ -13,7 +13,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import {horizontalScale, moderateScale, verticalScale} from '../helper/metrics';
 import {FormButton, FormInput} from '../component';
 
-const FormScreens = () => {
+const FormScreens = ({navigation}) => {
   const [province, setProvince] = React.useState([]);
   const [provinceOptOpen, setProvinceOptOpen] = React.useState(false);
   const [value, setValue] = React.useState(null);
@@ -315,15 +315,11 @@ const FormScreens = () => {
               </FormInput>
             </ScrollView>
           </View>
-          <View
-            style={{
-              paddingHorizontal: horizontalScale(20),
-              bottom: 0,
-              left: 0,
-              right: 0,
-              position: 'absolute',
-            }}>
-            <FormButton onPress={() => console.log('test')} title={'Submit'} />
+          <View style={styles.nextButtonContainer}>
+            <FormButton
+              onPress={() => navigation.navigate('UploadPhoto')}
+              title={'Next'}
+            />
           </View>
         </View>
       ) : (
@@ -356,6 +352,13 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  nextButtonContainer: {
+    paddingHorizontal: horizontalScale(20),
+    bottom: 0,
+    left: 0,
+    right: 0,
+    position: 'absolute',
   },
   loadingText: {
     fontSize: moderateScale(24),
