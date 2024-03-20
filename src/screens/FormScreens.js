@@ -12,8 +12,11 @@ import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {horizontalScale, moderateScale, verticalScale} from '../helper/metrics';
 import {FormButton, FormInput} from '../component';
+import {FormContext} from '../helper/context';
 
 const FormScreens = ({navigation}) => {
+  const {data, setData} = React.useContext(FormContext);
+
   const [province, setProvince] = React.useState([]);
   const [provinceOptOpen, setProvinceOptOpen] = React.useState(false);
   const [value, setValue] = React.useState(null);
@@ -77,7 +80,13 @@ const FormScreens = ({navigation}) => {
         setCity([]);
         setDistrict([]);
         setSubDistrict([]);
-        // setData(name)
+        setData({
+          ...data,
+          city: null,
+          district: null,
+          subDistrict: null,
+          province: name,
+        });
         axios({
           url: `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`,
           method: 'GET',
@@ -95,7 +104,12 @@ const FormScreens = ({navigation}) => {
       case 'city':
         setDistrict([]);
         setSubDistrict([]);
-
+        setData({
+          ...data,
+          city: name,
+          district: null,
+          subDistrict: null,
+        });
         axios({
           url: `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${id}.json`,
           method: 'GET',
@@ -110,6 +124,11 @@ const FormScreens = ({navigation}) => {
 
       case 'district':
         setSubDistrict([]);
+        setData({
+          ...data,
+          district: name,
+          subDistrict: null,
+        });
         axios({
           url: `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${id}.json`,
           method: 'GET',
@@ -120,30 +139,16 @@ const FormScreens = ({navigation}) => {
           })
           .catch(error => console.error(error));
         break;
+      case 'subDistrict':
+        setData({
+          ...data,
+          subDistrict: name,
+        });
+        break;
+
       default:
         break;
     }
-  };
-
-  const handleProvinceSelect = (id, name) => {
-    // setValue(id);
-    // setData(name)
-    setCity([]);
-    setDistrict([]);
-    setSubDistrict([]);
-
-    axios({
-      url: `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`,
-      method: 'GET',
-    })
-      .then(res => {
-        setCity(res.data);
-        setCityValue(null);
-        setDistrictValue(null);
-        setSubDistrictValue(null);
-        // console.log(res.data);
-      })
-      .catch(error => console.error(error));
   };
 
   return (
@@ -157,14 +162,23 @@ const FormScreens = ({navigation}) => {
               <Text style={styles.title}>Registration Form</Text>
 
               <FormInput title={'First Name'}>
-                <TextInput style={styles.input} placeholder="First Name" />
+                <TextInput
+                  style={styles.input}
+                  onChangeText={str => setData({...data, firstName: str})}
+                  placeholder="First Name"
+                />
               </FormInput>
               <FormInput title={'Last Name'}>
-                <TextInput style={styles.input} placeholder="Last Name" />
+                <TextInput
+                  style={styles.input}
+                  onChangeText={str => setData({...data, lastName: str})}
+                  placeholder="Last Name"
+                />
               </FormInput>
               <FormInput title={'Biodata'}>
                 <TextInput
                   style={[styles.input, styles.multilineInput]}
+                  onChangeText={str => setData({...data, biodata: str})}
                   placeholder="Biodata"
                   multiline={true}
                   numberOfLines={3}
@@ -288,6 +302,13 @@ const FormScreens = ({navigation}) => {
                   schema={{
                     label: 'name',
                     value: 'id',
+                  }}
+                  onSelectItem={value => {
+                    handleLocationSelection({
+                      id: value?.id,
+                      name: value?.name,
+                      type: 'subDistrict',
+                    });
                   }}
                   style={{marginTop: verticalScale(10)}}
                   placeholder="Pilih Kelurahan/Desa"

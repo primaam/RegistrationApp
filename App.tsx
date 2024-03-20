@@ -11,14 +11,23 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import AppStack from './src/navigation/AppStack';
 
 function App(): React.JSX.Element {
-  const [data, setData] = React.useState({});
+  const defaultValue = {
+    id: '',
+    firstName: '',
+    lastName: '',
+    biodata: '',
+    province: '',
+    city: '',
+    district: '',
+    subDistrict: '',
+    idImage: null,
+    selfieImage: null,
+    freeImage: null,
+  };
 
+  const [data, setData] = React.useState(defaultValue);
   return (
-    <FormContext.Provider
-      value={{
-        data,
-        setData,
-      }}>
+    <FormContext.Provider value={{data, setData}}>
       <AppStack />
     </FormContext.Provider>
   );

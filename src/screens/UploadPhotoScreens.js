@@ -14,8 +14,10 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import Tesseract, {createWorker} from 'tesseract.js';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import exampleImage from '../assets/cara-mudah-cek-ktp-asli-atau-palsu-718x375.jpeg';
+import {FormContext} from '../helper/context';
 
 const UploadPhotoScreens = ({navigation}) => {
+  const {data, setData} = React.useContext(FormContext);
   const [selectedIdImage, setSelectedIdImage] = React.useState(null);
   const [recognizedText, setRecognizedText] = React.useState('');
   const [imageZoomVisible, setImageZoomVisible] = React.useState(false);
@@ -43,11 +45,14 @@ const UploadPhotoScreens = ({navigation}) => {
           if (type === 'id') {
             console.log(imageUri);
             setSelectedIdImage(imageUri);
+            setData({...data, idImage: imageUri});
             performOCR(imageUri);
           } else if (type === 'selfie') {
             setSelectedSelfie(imageUri);
+            setData({...data, selfieImage: imageUri});
           } else {
             setSelectedFreeImage(imageUri);
+            setData({...data, freeImage: imageUri});
           }
         }
       },
@@ -69,11 +74,11 @@ const UploadPhotoScreens = ({navigation}) => {
           ? imagePath
           : '../assets/cara-mudah-cek-ktp-asli-atau-palsu-718x375.jpeg',
       );
-      console.log('res', text);
 
       const wordAt = text.search('NIK:');
       const filter = text.substring(wordAt, wordAt + 17);
       setRecognizedText(filter);
+      setData({...data, id: filter});
     } catch (error) {
       console.error('OCR Error: ', error);
     }
@@ -155,7 +160,7 @@ const UploadPhotoScreens = ({navigation}) => {
               />
             ) : (
               <View style={styles.emptyPhotoContainer}>
-                <Text>Pilih foto Selfie mu dengan tombol dibawah</Text>
+                <Text>Pilih fotomu dengan tombol dibawah</Text>
               </View>
             )}
 
